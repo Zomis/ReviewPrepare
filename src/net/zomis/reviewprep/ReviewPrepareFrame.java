@@ -28,16 +28,19 @@ public class ReviewPrepareFrame extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					new ReviewPrepareFrame().setVisible(true);
+		if (args.length == 0) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						new ReviewPrepareFrame().setVisible(true);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+			});
+		}
+		else ReviewPreparer.main(args);
 	}
 
 	/**
