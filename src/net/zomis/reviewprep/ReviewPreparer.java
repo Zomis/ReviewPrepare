@@ -3,6 +3,7 @@ package net.zomis.reviewprep;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -10,10 +11,49 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReviewPreparer {
+	/**
+	 * An output stream that keeps track of how many bytes that has been written to it.
+	 */
+	public static class CountingStream extends FilterOutputStream {
+		private final AtomicInteger bytesWritten;
+		
+		public CountingStream(OutputStream out) {
+			super(out);
+			this.bytesWritten = new AtomicInteger();
+		}
+		
+		@Override
+		public void write(int b) throws IOException {
+			bytesWritten.incrementAndGet();
+			super.write(b);
+		}
+		public int getBytesWritten() {
+			return bytesWritten.get();
+		}
+	}
+	
+	public static double detectAsciiness(File input) throws IOException {
+		if (input.length() == 0)
+			return 0;
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(input)))) {
+			int read;
+			long asciis = 0;
+			char[] cbuf = new char[1024];
+			while ((read = reader.read(cbuf)) != -1) {
+				for (int i = 0; i < read; i++) {
+					char c = cbuf[i];
+					if (c <= 0x7f)
+						asciis++;
+				}
+			}
+			return asciis / (double) input.length();
+		}
+	}
+
 	private final List<File> files;
 
 	public ReviewPreparer(List<File> files) {
@@ -70,7 +110,7 @@ public class ReviewPreparer {
 			catch (IOException e) {
 				ps.println("Could not read " + file.getAbsolutePath());
 				ps.println();
-				// this will be handled by another function
+				// more detailed handling of this exception will be handled by another function
 			}
 			
 		}
@@ -88,31 +128,42 @@ public class ReviewPreparer {
 	}
 	
 	private void outputFileContents(PrintStream ps) {
+		ps.println("#Code");
+		ps.println();
+		ps.println("This code can also be downloaded from [somewhere](http://github.com repository perhaps?)");
 		ps.println();
 		for (File file : files) {
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-				ps.printf("**%s:** (approximately %d bytes in %d lines)", className(file), file.length(), countLines(file));
+				int lines = -1;
+				try {
+					lines = countLines(file);
+				}
+				catch (IOException e) { 
+				}
+				ps.printf("**%s:** (%d lines, %d bytes)", file.getName(), lines, file.length());
+				
 				ps.println();
 				ps.println();
 				String line;
 				int importStatementsFinished = 0;
 				while ((line = in.readLine()) != null) {
 					// skip package and import declarations
-					if (line.startsWith("package ")) continue;
+					if (line.startsWith("package ")) 
+						continue;
 					if (line.startsWith("import ")) {
 						importStatementsFinished = 1;
 						continue;
 					}
 					if (importStatementsFinished >= 0) importStatementsFinished = -1;
-					if (importStatementsFinished == -1 && line.trim().isEmpty()) continue;
+					if (importStatementsFinished == -1 && line.trim().isEmpty()) // skip empty lines directly after import statements 
+						continue;
 					importStatementsFinished = -2;
-					line = line.replaceAll("    ", "\t"); // replace four spaces with tabs, since that takes less space
-					ps.print("    "); // format as code for StackExchange, this needs to be spaces.
+					ps.print("    "); // format as code for StackExchange, this needs to be four spaces.
 					ps.println(line);
 				}
 			}
 			catch (IOException e) {
-				ps.print("> ");
+				ps.print("> Unable to read " + file + ": "); // use a block-quote for exceptions
 				e.printStackTrace(ps);
 			}
 			ps.println();
@@ -131,35 +182,75 @@ public class ReviewPreparer {
 				ps.println("Unable to determine line count for " + file.getAbsolutePath());
 			}
 		}
-		ps.printf("###Class Summary (%d bytes in %d lines in %d files)", totalLength, totalLines, files.size());
+		ps.printf("###Class Summary (%d lines in %d files, making a total of %d bytes)", totalLines, files.size(), totalLength);
 		ps.println();
 		ps.println();
 		for (File file : files) {
-			ps.println("- " + className(file) + ": ");
+			ps.println("- " + file.getName() + ": ");
 		}
+		ps.println();
 	}
 	
-	private String className(File file) {
-		String str = file.getName();
-		return str.substring(0, str.lastIndexOf('.'));
-	}
-
 	private void outputHeader(PrintStream ps) {
 		ps.println("#Description");
 		ps.println();
 		ps.println("- Add some [description for what the code does](http://meta.codereview.stackexchange.com/questions/1226/code-should-include-a-description-of-what-the-code-does)");
 		ps.println("- Is this a follow-up question? Answer [What has changed, Which question was the previous one, and why you are looking for another review](http://meta.codereview.stackexchange.com/questions/1065/how-to-post-a-follow-up-question)");
 		ps.println();
-		ps.println("#Code download");
-		ps.println();
-		ps.println("For convenience, this code can be downloaded from [somewhere](http://github.com repository perhaps?)");
-		ps.println();
 	}
 	
-	public static void main(String[] args) throws IOException {
-//		List<File> fileList = Arrays.asList(new File("C:/_zomisnet/_reviewtest").listFiles());
-		List<File> fileList = Arrays.asList(new File("./src/net/zomis/reviewprep").listFiles());
-		new ReviewPreparer(fileList).createFormattedQuestion(System.out);
+	public static boolean isAsciiFile(File file) {
+		try {
+			return detectAsciiness(file) >= 0.99;
+		}
+		catch (IOException e) {
+			return true; // if an error occoured, we want it to be added to a list and the error shown in the output
+		}
 	}
 	
+	public static void main(String[] args) {
+		List<File> files = new ArrayList<>();
+		if (args.length == 0)
+			files.addAll(fileList("."));
+		for (String arg : args) {
+			files.addAll(fileList(arg));
+		}
+		new ReviewPreparer(files).createFormattedQuestion(System.out);
+	}
+	
+	public static List<File> fileList(String pattern) {
+		List<File> files = new ArrayList<>();
+		
+		File file = new File(pattern);
+		if (file.exists()) {
+			if (file.isDirectory()) {
+				for (File f : file.listFiles())
+					if (!f.isDirectory() && isAsciiFile(f))
+						files.add(f);
+			}
+			else files.add(file);
+		}
+		else {
+			// extract path
+			int lastSeparator = pattern.lastIndexOf('\\');
+			lastSeparator = Math.max(lastSeparator, pattern.lastIndexOf('/'));
+			String path = lastSeparator < 0 ? "." : pattern.substring(0, lastSeparator);
+			file = new File(path); 
+			
+			// path has been extracted, check if path exists
+			if (file.exists()) {
+				// create a regex for searching for files, such as *.java, Test*.java
+				String regex = lastSeparator < 0 ? pattern : pattern.substring(lastSeparator + 1);
+				regex = regex.replaceAll("\\.", "\\.").replaceAll("\\?", ".?").replaceAll("\\*", ".*");
+				for (File f : file.listFiles()) {
+					// loop through directory, skip directories and filenames that don't match the pattern
+					if (!f.isDirectory() && f.getName().matches(regex) && isAsciiFile(f)) {
+						files.add(f);
+					}
+				}
+			}
+			else System.out.println("Unable to find path " + file);
+		}
+		return files;
+	}
 }
