@@ -5,12 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ReviewPreparer {
 	public static double detectAsciiness(File input) throws IOException {
@@ -47,35 +48,42 @@ public class ReviewPreparer {
 		}
 	}
 
-	public int createFormattedQuestion(OutputStream out) {
-		CountingStream counter = new CountingStream(out);
-		PrintStream ps = new PrintStream(counter);
-		outputHeader(ps);
-		outputFileNames(ps);
-		outputFileContents(ps);
-		outputDependencies(ps);
-		outputFooter(ps);
-		ps.print("Question Length: ");
-		ps.println(counter.getBytesWritten());
-		return counter.getBytesWritten();
+	public String createFormattedQuestion() {
+		StringBuilder strBuilder = new StringBuilder();
+		outputHeader(strBuilder);
+		outputFileNames(strBuilder);
+		outputDependencies(strBuilder);
+		outputFileContents(strBuilder);
+		outputFooter(strBuilder);
+		strBuilder.append("Question Length: ");
+		strBuilder.append(strBuilder.length());
+		strBuilder.append("\n");
+		return strBuilder.toString();
 	}
 
-	private void outputFooter(PrintStream ps) {
-		ps.println("#Usage / Test");
-		ps.println();
-		ps.println();
-		ps.println("#Questions");
-		ps.println();
-		ps.println();
-		ps.println();
+	private void outputFooter(StringBuilder strBuilder) {
+		strBuilder.append("#Usage / Test\n");
+		strBuilder.append("\n");
+		strBuilder.append("\n");
+		strBuilder.append("#Questions\n");
+		strBuilder.append("\n");
+		strBuilder.append("\n");
+		strBuilder.append("\n");
 	}
 
-	private void outputDependencies(PrintStream ps) {
-		List<String> dependencies = new ArrayList<>();
+	private void outputDependencies(StringBuilder strBuilder) {
+		Set<String> dependencies = new TreeSet<>();
+		List<String> todos = new ArrayList<>();
+		List<String> readErrors = new ArrayList<>();
+		
 		for (File file : files) {
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
 				String line;
 				while ((line = in.readLine()) != null) {
+					String todo = todoCheck(line);
+					if (todo != null)
+						todos.add(todo);
+					
 					if (!line.startsWith("import ")) continue;
 					if (line.startsWith("import java.")) continue;
 					if (line.startsWith("import javax.")) continue;
@@ -85,30 +93,45 @@ public class ReviewPreparer {
 				}
 			}
 			catch (IOException e) {
-				ps.println("Could not read " + file.getAbsolutePath());
-				ps.println();
+				readErrors.add("Could not read " + file.getAbsolutePath() + "\n");
 				// more detailed handling of this exception will be handled by another function
 			}
-			
 		}
-		if (!dependencies.isEmpty()) {
-			ps.println("#Dependencies");
-			ps.println();
-			for (String str : dependencies)
-				ps.println("- " + str + ": ");
+		
+		outputItems(strBuilder, todos, "#TODO items");
+		outputItems(strBuilder, dependencies, "#Dependencies");
+		outputItems(strBuilder, readErrors, "!!!!!! #Read Errors !!!!!!");
+		
+	}
+
+	private void outputItems(StringBuilder strBuilder, Collection<String> lines, String header) {
+		if (!lines.isEmpty()) {
+			strBuilder.append(header + "\n");
+			strBuilder.append("\n");
+			for (String str : lines)
+				strBuilder.append("- " + str + ": \n");
+			strBuilder.append("\n");
 		}
-		ps.println();
+	}
+
+	private String todoCheck(String line) {
+		int index = line.indexOf("TODO");
+		if (index == -1)
+			return null;
+		return line.substring(index);
+		
 	}
 
 	private int countLines(File file) throws IOException {
 		return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).size();
 	}
 	
-	private void outputFileContents(PrintStream ps) {
-		ps.println("#Code");
-		ps.println();
-		ps.println("This code can also be downloaded from [somewhere](http://github.com repository perhaps?)");
-		ps.println();
+	private void outputFileContents(StringBuilder strBuilder) {
+		strBuilder.append("#Code\n");
+		strBuilder.append("\n");
+		strBuilder.append("This code can also be downloaded from [somewhere](http://github.com repository perhaps?)\n");
+		strBuilder.append("\n");
+		strBuilder.append("\n");
 		for (File file : files) {
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
 				int lines = -1;
@@ -117,10 +140,10 @@ public class ReviewPreparer {
 				}
 				catch (IOException e) { 
 				}
-				ps.printf("**%s:** (%d lines, %d bytes)", file.getName(), lines, file.length());
+				strBuilder.append(String.format("**%s:** (%d lines, %d bytes)", file.getName(), lines, file.length()));
 				
-				ps.println();
-				ps.println();
+				strBuilder.append("\n");
+				strBuilder.append("\n");
 				String line;
 				int importStatementsFinished = 0;
 				while ((line = in.readLine()) != null) {
@@ -135,19 +158,20 @@ public class ReviewPreparer {
 					if (importStatementsFinished == -1 && line.trim().isEmpty()) // skip empty lines directly after import statements 
 						continue;
 					importStatementsFinished = -2;
-					ps.print("    "); // format as code for StackExchange, this needs to be four spaces.
-					ps.println(line);
+					strBuilder.append("    "); // format as code for StackExchange, this needs to be four spaces.
+					strBuilder.append(line + "\n");
 				}
 			}
 			catch (IOException e) {
-				ps.print("> Unable to read " + file + ": "); // use a block-quote for exceptions
-				e.printStackTrace(ps);
+				strBuilder.append("> Unable to read " + file + ": "); // use a block-quote for exceptions
+				strBuilder.append(e);
+				strBuilder.append("\n");
 			}
-			ps.println();
+			strBuilder.append("\n");
 		}
 	}
 
-	private void outputFileNames(PrintStream ps) {
+	private void outputFileNames(StringBuilder strBuilder) {
 		int totalLength = 0;
 		int totalLines = 0;
 		for (File file : files) {
@@ -156,24 +180,28 @@ public class ReviewPreparer {
 				totalLines += countLines(file);
 			}
 			catch (IOException e) {
-				ps.println("Unable to determine line count for " + file.getAbsolutePath());
+				strBuilder.append("Unable to determine line count for " + file.getAbsolutePath() + "\n");
 			}
 		}
-		ps.printf("###Class Summary (%d lines in %d files, making a total of %d bytes)", totalLines, files.size(), totalLength);
-		ps.println();
-		ps.println();
+		strBuilder.append(String.format("###Class Summary (%d lines in %d files, making a total of %d bytes)", totalLines, files.size(), totalLength));
+		strBuilder.append("\n");
+		strBuilder.append("\n");
 		for (File file : files) {
-			ps.println("- " + file.getName() + ": ");
+			strBuilder.append("- " + file.getName() + ": \n");
 		}
-		ps.println();
+		strBuilder.append("\n");
 	}
 	
-	private void outputHeader(PrintStream ps) {
-		ps.println("#Description");
-		ps.println();
-		ps.println("- Add some [description for what the code does](http://meta.codereview.stackexchange.com/questions/1226/code-should-include-a-description-of-what-the-code-does)");
-		ps.println("- Is this a follow-up question? Answer [What has changed, Which question was the previous one, and why you are looking for another review](http://meta.codereview.stackexchange.com/questions/1065/how-to-post-a-follow-up-question)");
-		ps.println();
+	private void outputHeader(StringBuilder strBuilder) {
+		strBuilder.append("#Description\n");
+		strBuilder.append("\n");
+		strBuilder.append("- Add some [description for what the code does](http://meta.codereview.stackexchange.com/questions/1226/code-should-include-a-description-of-what-the-code-does)\n");
+		strBuilder.append("- Is this a follow-up question? Answer [What has changed, Which question was the previous one, and why you are looking for another review](http://meta.codereview.stackexchange.com/questions/1065/how-to-post-a-follow-up-question)\n");
+		strBuilder.append("- Which Java compiler version is being used?\n");
+		strBuilder.append("- Is GWT compatibility needed? (i.e. can String.format and some other stuff be used?)\n");
+		strBuilder.append("- Are there any other requirements causing some possible rewrites of the code to be invalid?\n");
+		strBuilder.append("- Does the code contain any // TODO comments that should be fixed before putting it up for review?\n");
+		strBuilder.append("\n");
 	}
 	
 	public static boolean isAsciiFile(File file) {
@@ -183,16 +211,6 @@ public class ReviewPreparer {
 		catch (IOException e) {
 			return true; // if an error occoured, we want it to be added to a list and the error shown in the output
 		}
-	}
-	
-	public static void main(String[] args) {
-		List<File> files = new ArrayList<>();
-		if (args.length == 0)
-			files.addAll(fileList("."));
-		for (String arg : args) {
-			files.addAll(fileList(arg));
-		}
-		new ReviewPreparer(files).createFormattedQuestion(System.out);
 	}
 	
 	public static List<File> fileList(String pattern) {
@@ -229,5 +247,15 @@ public class ReviewPreparer {
 			else System.out.println("Unable to find path " + file);
 		}
 		return files;
+	}
+
+	public static void start(String[] args) {
+		List<File> files = new ArrayList<>();
+		if (args.length == 0)
+			files.addAll(fileList("."));
+		for (String arg : args) {
+			files.addAll(fileList(arg));
+		}
+		System.out.println(new ReviewPreparer(files).createFormattedQuestion());
 	}
 }

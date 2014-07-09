@@ -40,7 +40,7 @@ public class ReviewPrepareFrame extends JFrame {
 				}
 			});
 		}
-		else ReviewPreparer.main(args);
+		else ReviewPreparer.start(args);
 	}
 
 	/**
@@ -90,10 +90,8 @@ public class ReviewPrepareFrame extends JFrame {
 		JButton performButton = new JButton("Create Question stub with code included");
 		performButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				result.setText("");
 				ReviewPreparer preparer = new ReviewPreparer(filesToList(model));
-				TextAreaOutputStream outputStream = new TextAreaOutputStream(result);
-				preparer.createFormattedQuestion(outputStream);
+				result.setText(preparer.createFormattedQuestion());
 			}
 		});
 		contentPane.add(performButton, BorderLayout.SOUTH);
