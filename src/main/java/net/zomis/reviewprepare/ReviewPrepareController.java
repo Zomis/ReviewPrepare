@@ -15,7 +15,7 @@ import net.zomis.reviewprepare.util.Launchable;
  * FXML Controller class
  *
  */
-public class ReviewPrepareController implements Initializable,Launchable {
+public class ReviewPrepareController implements Initializable, Launchable {
 
     private Stage stage;
     
