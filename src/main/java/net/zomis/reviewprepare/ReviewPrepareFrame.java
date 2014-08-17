@@ -18,7 +18,7 @@ import javax.swing.border.EmptyBorder;
 
 public class ReviewPrepareFrame extends JFrame {
 
-	private static final long	serialVersionUID	= 2050188992596669693L;
+	private static final long serialVersionUID = 2050188992596669693L;
 	private final JTextArea result = new JTextArea();
 
 	/**
@@ -29,13 +29,11 @@ public class ReviewPrepareFrame extends JFrame {
 			EventQueue.invokeLater(() -> {
 				try {
 					new ReviewPrepareFrame().setVisible(true);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			});
-		}
-		else ReviewPreparer.start(args);
+		} else ReviewPreparer.start(args);
 	}
 
 	/**
@@ -85,7 +83,7 @@ public class ReviewPrepareFrame extends JFrame {
 		});
 		contentPane.add(performButton, BorderLayout.SOUTH);
 		contentPane.add(result, BorderLayout.CENTER);
-		
+
 //	    JScrollPane scroll = new JScrollPane(result);
 //	    scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	}
