@@ -10,13 +10,13 @@ import net.zomis.reviewprepare.util.FxmlTools;
  *
  */
 public class ReviewPrepareApplication extends Application {
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
+
         final Parameters params = getParameters();
         final List<String> parameters = params.getRaw();
-        
+
         if (parameters.isEmpty()) {
             //show the stage
             FxmlTools.launchFxml("/fxml/ReviewPrepare.fxml", "Review Prepare",
@@ -27,7 +27,7 @@ public class ReviewPrepareApplication extends Application {
                     new String[parameters.size()]));
         }
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }

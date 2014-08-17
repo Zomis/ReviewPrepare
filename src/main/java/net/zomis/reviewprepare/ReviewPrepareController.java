@@ -1,8 +1,9 @@
 package net.zomis.reviewprepare;
 
-
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,14 +18,16 @@ import net.zomis.reviewprepare.util.Launchable;
  */
 public class ReviewPrepareController implements Initializable, Launchable {
 
-    private Stage stage;
-    
+    private Stage stage; //to use with control fx to show messageboxes 
+
     @FXML
-    private ListView<?> lvFiles;
+    private ListView<File> lvFiles;
 
     @FXML
     private TextArea txtQuestion;
 
+    private ObservableList<File> filesModel;
+    
     @FXML
     void btnAddFilesOnAction(ActionEvent event) {
 
@@ -42,7 +45,7 @@ public class ReviewPrepareController implements Initializable, Launchable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        filesModel = lvFiles.getItems();
     }
 
     @Override

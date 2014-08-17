@@ -5,7 +5,6 @@ import javafx.stage.Stage;
 /**
  * Launch-able interface
  *
- * @author Bhathiya
  */
 public interface Launchable {
 

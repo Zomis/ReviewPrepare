@@ -10,7 +10,6 @@ import javafx.stage.Stage;
 /**
  * Handle FXML Launching
  *
- * @author Bhathiya
  */
 public class FxmlTools {
 
