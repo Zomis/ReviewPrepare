@@ -1,6 +1,8 @@
 package net.zomis.reviewprepare;
 
+
 import java.io.File;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.collections.ObservableList;
@@ -18,7 +20,11 @@ import net.zomis.reviewprepare.util.Launchable;
  */
 public class ReviewPrepareController implements Initializable, Launchable {
 
+
     private Stage stage; //to use with control fx to show messageboxes 
+
+
+    
 
     @FXML
     private ListView<File> lvFiles;
