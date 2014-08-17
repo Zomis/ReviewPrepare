@@ -1,4 +1,4 @@
-package net.zomis.reviewprep;
+package net.zomis.reviewprepare;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,14 +36,14 @@ public class ReviewPreparer {
 
 	public ReviewPreparer(List<File> files) {
 		this.files = new ArrayList<>();
-		
+
 		for (File file : files) {
 			if (file.getName().lastIndexOf('.') == -1)
 				continue;
 
 			if (file.length() < 10)
 				continue;
-			
+
 			this.files.add(file);
 		}
 	}
@@ -75,7 +75,7 @@ public class ReviewPreparer {
 		Set<String> dependencies = new TreeSet<>();
 		List<String> todos = new ArrayList<>();
 		List<String> readErrors = new ArrayList<>();
-		
+
 		for (File file : files) {
 			try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
 				String line;
@@ -83,7 +83,7 @@ public class ReviewPreparer {
 					String todo = todoCheck(line);
 					if (todo != null)
 						todos.add(todo);
-					
+
 					if (!line.startsWith("import ")) continue;
 					if (line.startsWith("import java.")) continue;
 					if (line.startsWith("import javax.")) continue;
@@ -97,11 +97,11 @@ public class ReviewPreparer {
 				// more detailed handling of this exception will be handled by another function
 			}
 		}
-		
+
 		outputItems(strBuilder, todos, "#TODO items");
 		outputItems(strBuilder, dependencies, "#Dependencies");
 		outputItems(strBuilder, readErrors, "!!!!!! #Read Errors !!!!!!");
-		
+
 	}
 
 	private void outputItems(StringBuilder strBuilder, Collection<String> lines, String header) {
@@ -119,13 +119,13 @@ public class ReviewPreparer {
 		if (index == -1)
 			return null;
 		return line.substring(index);
-		
+
 	}
 
 	private int countLines(File file) throws IOException {
 		return Files.readAllLines(file.toPath(), StandardCharsets.UTF_8).size();
 	}
-	
+
 	private void outputFileContents(StringBuilder strBuilder) {
 		strBuilder.append("#Code\n");
 		strBuilder.append("\n");
@@ -138,24 +138,24 @@ public class ReviewPreparer {
 				try {
 					lines = countLines(file);
 				}
-				catch (IOException e) { 
+				catch (IOException e) {
 				}
 				strBuilder.append(String.format("**%s:** (%d lines, %d bytes)", file.getName(), lines, file.length()));
-				
+
 				strBuilder.append("\n");
 				strBuilder.append("\n");
 				String line;
 				int importStatementsFinished = 0;
 				while ((line = in.readLine()) != null) {
 					// skip package and import declarations
-					if (line.startsWith("package ")) 
+					if (line.startsWith("package "))
 						continue;
 					if (line.startsWith("import ")) {
 						importStatementsFinished = 1;
 						continue;
 					}
 					if (importStatementsFinished >= 0) importStatementsFinished = -1;
-					if (importStatementsFinished == -1 && line.trim().isEmpty()) // skip empty lines directly after import statements 
+					if (importStatementsFinished == -1 && line.trim().isEmpty()) // skip empty lines directly after import statements
 						continue;
 					importStatementsFinished = -2;
 					strBuilder.append("    "); // format as code for StackExchange, this needs to be four spaces.
@@ -191,7 +191,7 @@ public class ReviewPreparer {
 		}
 		strBuilder.append("\n");
 	}
-	
+
 	private void outputHeader(StringBuilder strBuilder) {
 		strBuilder.append("#Description\n");
 		strBuilder.append("\n");
@@ -203,7 +203,7 @@ public class ReviewPreparer {
 		strBuilder.append("- Does the code contain any // TODO comments that should be fixed before putting it up for review?\n");
 		strBuilder.append("\n");
 	}
-	
+
 	public static boolean isAsciiFile(File file) {
 		try {
 			return detectAsciiness(file) >= 0.99;
@@ -212,10 +212,10 @@ public class ReviewPreparer {
 			return true; // if an error occoured, we want it to be added to a list and the error shown in the output
 		}
 	}
-	
+
 	public static List<File> fileList(String pattern) {
 		List<File> files = new ArrayList<>();
-		
+
 		File file = new File(pattern);
 		if (file.exists()) {
 			if (file.isDirectory()) {
@@ -230,8 +230,8 @@ public class ReviewPreparer {
 			int lastSeparator = pattern.lastIndexOf('\\');
 			lastSeparator = Math.max(lastSeparator, pattern.lastIndexOf('/'));
 			String path = lastSeparator < 0 ? "." : pattern.substring(0, lastSeparator);
-			file = new File(path); 
-			
+			file = new File(path);
+
 			// path has been extracted, check if path exists
 			if (file.exists()) {
 				// create a regex for searching for files, such as *.java, Test*.java
