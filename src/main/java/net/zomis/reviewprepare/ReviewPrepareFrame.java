@@ -1,4 +1,4 @@
-package net.zomis.reviewprep;
+package net.zomis.reviewprepare;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -56,15 +56,15 @@ public class ReviewPrepareFrame extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
+
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.NORTH);
-		
+
 		final DefaultListModel<File> model = new DefaultListModel<>();
 		final JList<File> list = new JList<File>();
 		panel.add(list);
 		list.setModel(model);
-		
+
 		JButton btnAddFiles = new JButton("Add files");
 		btnAddFiles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -78,7 +78,7 @@ public class ReviewPrepareFrame extends JFrame {
 			}
 		});
 		panel.add(btnAddFiles);
-		
+
 		JButton btnRemoveFiles = new JButton("Remove files");
 		btnRemoveFiles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -88,7 +88,7 @@ public class ReviewPrepareFrame extends JFrame {
 			}
 		});
 		panel.add(btnRemoveFiles);
-		
+
 		JButton performButton = new JButton("Create Question stub with code included");
 		performButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -110,6 +110,6 @@ public class ReviewPrepareFrame extends JFrame {
 		}
 		return files;
 	}
-	
+
 
 }
