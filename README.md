@@ -18,14 +18,9 @@ Create jar
 
     mvn package
 
-This creates two jars in `target/`:
+Run the executable jar with:
 
-- `reviewprepare.jar`: regular jar
-- `reviewprepare-jar-with-dependencies.jar`: executable jar
-
-Test run the executable jar with:
-
-    java -jar target/reviewprepare-jar-with-dependencies.jar src/main/java/net/zomis/reviewprepare/ReviewPreparer.java
+    java -jar target/reviewprepare.jar src/main/java/net/zomis/reviewprepare/ReviewPreparer.java
 
 
 [1]: http://codereview.stackexchange.com/
