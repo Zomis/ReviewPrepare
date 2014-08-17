@@ -91,8 +91,7 @@ public class ReviewPreparer {
 					importStatement = importStatement.substring(0, importStatement.length() - 1); // cut the semicolon
 					dependencies.add(importStatement);
 				}
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				readErrors.add("Could not read " + file.getAbsolutePath() + "\n");
 				// more detailed handling of this exception will be handled by another function
 			}
@@ -106,10 +105,10 @@ public class ReviewPreparer {
 
 	private void outputItems(StringBuilder strBuilder, Collection<String> lines, String header) {
 		if (!lines.isEmpty()) {
-			strBuilder.append(header + "\n");
-			strBuilder.append("\n");
-			for (String str : lines)
-				strBuilder.append("- " + str + ": \n");
+			strBuilder.append(header).append("\n\n");
+			for (String str : lines) {
+				strBuilder.append("- ").append(str).append(": \n");
+			}
 			strBuilder.append("\n");
 		}
 	}
@@ -137,8 +136,7 @@ public class ReviewPreparer {
 				int lines = -1;
 				try {
 					lines = countLines(file);
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 				}
 				strBuilder.append(String.format("**%s:** (%d lines, %d bytes)", file.getName(), lines, file.length()));
 
@@ -159,11 +157,10 @@ public class ReviewPreparer {
 						continue;
 					importStatementsFinished = -2;
 					strBuilder.append("    "); // format as code for StackExchange, this needs to be four spaces.
-					strBuilder.append(line + "\n");
+					strBuilder.append(line).append("\n");
 				}
-			}
-			catch (IOException e) {
-				strBuilder.append("> Unable to read " + file + ": "); // use a block-quote for exceptions
+			} catch (IOException e) {
+				strBuilder.append("> Unable to read ").append(file).append(": "); // use a block-quote for exceptions
 				strBuilder.append(e);
 				strBuilder.append("\n");
 			}
@@ -178,16 +175,15 @@ public class ReviewPreparer {
 			totalLength += file.length();
 			try {
 				totalLines += countLines(file);
-			}
-			catch (IOException e) {
-				strBuilder.append("Unable to determine line count for " + file.getAbsolutePath() + "\n");
+			} catch (IOException e) {
+				strBuilder.append("Unable to determine line count for ").append(file.getAbsolutePath()).append("\n");
 			}
 		}
 		strBuilder.append(String.format("###Class Summary (%d lines in %d files, making a total of %d bytes)", totalLines, files.size(), totalLength));
 		strBuilder.append("\n");
 		strBuilder.append("\n");
 		for (File file : files) {
-			strBuilder.append("- " + file.getName() + ": \n");
+			strBuilder.append("- ").append(file.getName()).append(": \n");
 		}
 		strBuilder.append("\n");
 	}
@@ -207,8 +203,7 @@ public class ReviewPreparer {
 	public static boolean isAsciiFile(File file) {
 		try {
 			return detectAsciiness(file) >= 0.99;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			return true; // if an error occoured, we want it to be added to a list and the error shown in the output
 		}
 	}
@@ -219,13 +214,16 @@ public class ReviewPreparer {
 		File file = new File(pattern);
 		if (file.exists()) {
 			if (file.isDirectory()) {
-				for (File f : file.listFiles())
-					if (!f.isDirectory() && isAsciiFile(f))
-						files.add(f);
-			}
-			else files.add(file);
-		}
-		else {
+				File[] files2 = file.listFiles();
+				if (files2 != null) {
+					for (File f : files2) {
+						if (!f.isDirectory() && isAsciiFile(f)) {
+							files.add(f);
+						}
+					}
+				}
+			} else files.add(file);
+		} else {
 			// extract path
 			int lastSeparator = pattern.lastIndexOf('\\');
 			lastSeparator = Math.max(lastSeparator, pattern.lastIndexOf('/'));
@@ -237,14 +235,16 @@ public class ReviewPreparer {
 				// create a regex for searching for files, such as *.java, Test*.java
 				String regex = lastSeparator < 0 ? pattern : pattern.substring(lastSeparator + 1);
 				regex = regex.replaceAll("\\.", "\\.").replaceAll("\\?", ".?").replaceAll("\\*", ".*");
-				for (File f : file.listFiles()) {
-					// loop through directory, skip directories and filenames that don't match the pattern
-					if (!f.isDirectory() && f.getName().matches(regex) && isAsciiFile(f)) {
-						files.add(f);
+				File[] files2 = file.listFiles();
+				if (files2 != null) {
+					for (File f : files2) {
+						// loop through directory, skip directories and filenames that don't match the pattern
+						if (!f.isDirectory() && f.getName().matches(regex) && isAsciiFile(f)) {
+							files.add(f);
+						}
 					}
 				}
-			}
-			else System.out.println("Unable to find path " + file);
+			} else System.out.println("Unable to find path " + file);
 		}
 		return files;
 	}
