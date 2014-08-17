@@ -91,8 +91,7 @@ public class ReviewPreparer {
 					importStatement = importStatement.substring(0, importStatement.length() - 1); // cut the semicolon
 					dependencies.add(importStatement);
 				}
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				readErrors.add("Could not read " + file.getAbsolutePath() + "\n");
 				// more detailed handling of this exception will be handled by another function
 			}
@@ -109,7 +108,7 @@ public class ReviewPreparer {
 			strBuilder.append(header).append("\n\n");
 			for (String str : lines) {
 				strBuilder.append("- ").append(str).append(": \n");
-            }
+			}
 			strBuilder.append("\n");
 		}
 	}
@@ -137,8 +136,7 @@ public class ReviewPreparer {
 				int lines = -1;
 				try {
 					lines = countLines(file);
-				}
-				catch (IOException e) {
+				} catch (IOException e) {
 				}
 				strBuilder.append(String.format("**%s:** (%d lines, %d bytes)", file.getName(), lines, file.length()));
 
@@ -161,8 +159,7 @@ public class ReviewPreparer {
 					strBuilder.append("    "); // format as code for StackExchange, this needs to be four spaces.
 					strBuilder.append(line).append("\n");
 				}
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				strBuilder.append("> Unable to read ").append(file).append(": "); // use a block-quote for exceptions
 				strBuilder.append(e);
 				strBuilder.append("\n");
@@ -178,8 +175,7 @@ public class ReviewPreparer {
 			totalLength += file.length();
 			try {
 				totalLines += countLines(file);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				strBuilder.append("Unable to determine line count for ").append(file.getAbsolutePath()).append("\n");
 			}
 		}
@@ -207,8 +203,7 @@ public class ReviewPreparer {
 	public static boolean isAsciiFile(File file) {
 		try {
 			return detectAsciiness(file) >= 0.99;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			return true; // if an error occoured, we want it to be added to a list and the error shown in the output
 		}
 	}
@@ -227,10 +222,8 @@ public class ReviewPreparer {
 						}
 					}
 				}
-			}
-			else files.add(file);
-		}
-		else {
+			} else files.add(file);
+		} else {
 			// extract path
 			int lastSeparator = pattern.lastIndexOf('\\');
 			lastSeparator = Math.max(lastSeparator, pattern.lastIndexOf('/'));
@@ -251,8 +244,7 @@ public class ReviewPreparer {
 						}
 					}
 				}
-			}
-			else System.out.println("Unable to find path " + file);
+			} else System.out.println("Unable to find path " + file);
 		}
 		return files;
 	}
