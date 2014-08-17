@@ -1,6 +1,5 @@
 package net.zomis.reviewprepare;
 
-
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -18,7 +17,7 @@ import net.zomis.reviewprepare.util.Launchable;
 public class ReviewPrepareController implements Initializable, Launchable {
 
     private Stage stage;
-    
+
     @FXML
     private ListView<?> lvFiles;
 
