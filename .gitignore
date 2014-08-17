@@ -14,3 +14,7 @@ hs_err_pid*
 # intellij
 .idea
 *.iml
+
+# Netbeans
+nbactions.xml
+nb-configuration.xml
