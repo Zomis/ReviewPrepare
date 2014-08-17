@@ -8,13 +8,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
+import net.zomis.reviewprepare.util.Launchable;
 
 /**
  * FXML Controller class
  *
  */
-public class ReviewPrepareController implements Initializable {
+public class ReviewPrepareController implements Initializable,Launchable {
 
+    private Stage stage;
+    
     @FXML
     private ListView<?> lvFiles;
 
@@ -39,6 +43,11 @@ public class ReviewPrepareController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+    }
+
+    @Override
+    public void launch(Stage stage, Object[] parameters) {
+        this.stage = stage;
     }
 
 }
