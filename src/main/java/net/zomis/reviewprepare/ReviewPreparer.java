@@ -219,9 +219,14 @@ public class ReviewPreparer {
 		File file = new File(pattern);
 		if (file.exists()) {
 			if (file.isDirectory()) {
-				for (File f : file.listFiles())
-					if (!f.isDirectory() && isAsciiFile(f))
-						files.add(f);
+				File[] files2 = file.listFiles();
+				if (files2 != null) {
+					for (File f : files2) {
+						if (!f.isDirectory() && isAsciiFile(f)) {
+							files.add(f);
+						}
+					}
+				}
 			}
 			else files.add(file);
 		}
@@ -237,10 +242,13 @@ public class ReviewPreparer {
 				// create a regex for searching for files, such as *.java, Test*.java
 				String regex = lastSeparator < 0 ? pattern : pattern.substring(lastSeparator + 1);
 				regex = regex.replaceAll("\\.", "\\.").replaceAll("\\?", ".?").replaceAll("\\*", ".*");
-				for (File f : file.listFiles()) {
-					// loop through directory, skip directories and filenames that don't match the pattern
-					if (!f.isDirectory() && f.getName().matches(regex) && isAsciiFile(f)) {
-						files.add(f);
+				File[] files2 = file.listFiles();
+				if (files2 != null) {
+					for (File f : files2) {
+						// loop through directory, skip directories and filenames that don't match the pattern
+						if (!f.isDirectory() && f.getName().matches(regex) && isAsciiFile(f)) {
+							files.add(f);
+						}
 					}
 				}
 			}
