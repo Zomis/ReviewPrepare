@@ -2,8 +2,6 @@ package net.zomis.reviewprepare;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +26,12 @@ public class ReviewPrepareFrame extends JFrame {
 	 */
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						new ReviewPrepareFrame().setVisible(true);
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
+			EventQueue.invokeLater(() -> {
+				try {
+					new ReviewPrepareFrame().setVisible(true);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
 				}
 			});
 		}
@@ -58,40 +54,34 @@ public class ReviewPrepareFrame extends JFrame {
 		contentPane.add(panel, BorderLayout.NORTH);
 
 		final DefaultListModel<File> model = new DefaultListModel<>();
-		final JList<File> list = new JList<File>();
+		final JList<File> list = new JList<>();
 		panel.add(list);
 		list.setModel(model);
 
 		JButton btnAddFiles = new JButton("Add files");
-		btnAddFiles.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser dialog = new JFileChooser();
-				dialog.setMultiSelectionEnabled(true);
-				if (dialog.showOpenDialog(ReviewPrepareFrame.this) == JFileChooser.APPROVE_OPTION) {
-					for (File file : dialog.getSelectedFiles()) {
-						model.addElement(file);
-					}
+		btnAddFiles.addActionListener(e -> {
+			JFileChooser dialog = new JFileChooser();
+			dialog.setMultiSelectionEnabled(true);
+			if (dialog.showOpenDialog(ReviewPrepareFrame.this) == JFileChooser.APPROVE_OPTION) {
+				for (File file : dialog.getSelectedFiles()) {
+					model.addElement(file);
 				}
 			}
 		});
 		panel.add(btnAddFiles);
 
 		JButton btnRemoveFiles = new JButton("Remove files");
-		btnRemoveFiles.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				for (File file : new ArrayList<>(list.getSelectedValuesList())) {
-					model.removeElement(file);
-				}
+		btnRemoveFiles.addActionListener(e -> {
+			for (File file : new ArrayList<>(list.getSelectedValuesList())) {
+				model.removeElement(file);
 			}
 		});
 		panel.add(btnRemoveFiles);
 
 		JButton performButton = new JButton("Create Question stub with code included");
-		performButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				ReviewPreparer preparer = new ReviewPreparer(filesToList(model));
-				result.setText(preparer.createFormattedQuestion());
-			}
+		performButton.addActionListener(arg0 -> {
+			ReviewPreparer preparer = new ReviewPreparer(filesToList(model));
+			result.setText(preparer.createFormattedQuestion());
 		});
 		contentPane.add(performButton, BorderLayout.SOUTH);
 		contentPane.add(result, BorderLayout.CENTER);
