@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import net.zomis.reviewprepare.util.Launchable;
 
 /**
- * FXML Controller class
+ * ReviewPrepar FXML Controller
  *
  */
 public class ReviewPrepareController implements Initializable, Launchable {
