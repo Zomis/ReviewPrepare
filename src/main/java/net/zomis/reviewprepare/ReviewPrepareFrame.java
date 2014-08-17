@@ -21,7 +21,6 @@ import javax.swing.border.EmptyBorder;
 public class ReviewPrepareFrame extends JFrame {
 
 	private static final long	serialVersionUID	= 2050188992596669693L;
-	private JPanel	contentPane;
 	private final JTextArea result = new JTextArea();
 
 	/**
@@ -50,7 +49,7 @@ public class ReviewPrepareFrame extends JFrame {
 		setTitle("Prepare code for Code Review");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
+		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
