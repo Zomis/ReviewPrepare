@@ -27,10 +27,9 @@ public class FxmlTools {
 
         stage.setTitle(title);
 
-        Region root;
         FXMLLoader loader = new FXMLLoader(FxmlTools.class.getResource(
                 FXML));
-        root = loader.load();
+        Region root = loader.load();
         Object controller = loader.getController();
         if (controller instanceof Launchable) {
             Launchable launchable = (Launchable) controller;
@@ -38,9 +37,7 @@ public class FxmlTools {
         }
 
         Scene scene = new Scene(root);
-
         stage.setScene(scene);
-
         stage.show();
     }
 }

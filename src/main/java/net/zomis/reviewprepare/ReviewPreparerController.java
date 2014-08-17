@@ -1,4 +1,4 @@
-package net.zomis.reviewprep;
+package net.zomis.reviewprepare;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
