@@ -17,16 +17,15 @@ Create jar
 ----------
 
     mvn package
-    # see in target/reviewprepare-1.0-SNAPSHOT.jar
 
-Create executable jar
----------------------
+This creates two jars in `target/`:
 
-    # executable, with deps
-    mvn assembly:single
+- `reviewprepare.jar`: regular jar
+- `reviewprepare-jar-with-dependencies.jar`: executable jar
 
-    # test run it
-    java -jar target/reviewprepare-1.0-SNAPSHOT-jar-with-dependencies.jar src/main/java/net/zomis/reviewprepare/ReviewPreparer.java
+Test run the executable jar with:
+
+    java -jar target/reviewprepare-jar-with-dependencies.jar src/main/java/net/zomis/reviewprepare/ReviewPreparer.java
 
 
 [1]: http://codereview.stackexchange.com/
