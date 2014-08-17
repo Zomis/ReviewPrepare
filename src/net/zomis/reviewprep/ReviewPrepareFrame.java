@@ -14,7 +14,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
 
 
@@ -96,6 +98,9 @@ public class ReviewPrepareFrame extends JFrame {
 		});
 		contentPane.add(performButton, BorderLayout.SOUTH);
 		contentPane.add(result, BorderLayout.CENTER);
+		
+//	    JScrollPane scroll = new JScrollPane(result);
+//	    scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	}
 
 	public List<File> filesToList(DefaultListModel<File> model) {
