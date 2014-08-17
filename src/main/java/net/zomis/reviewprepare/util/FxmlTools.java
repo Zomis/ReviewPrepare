@@ -15,14 +15,16 @@ public class FxmlTools {
 
     /**
      * Launch a FXML based interface
+     *
      * @param FXML class path to FXML
      * @param title title for the window
      * @param stage stage to render the FXML on
      * @param parameters parameters to pass to controller
-     * @throws IOException 
+     * @throws IOException
      */
     public static void launchFxml(String FXML, String title, Stage stage,
             Object[] parameters) throws IOException {
+
         stage.setTitle(title);
 
         Region root;
@@ -35,11 +37,10 @@ public class FxmlTools {
             launchable.launch(stage, parameters);
         }
 
-
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
-        
+
         stage.show();
     }
 }
