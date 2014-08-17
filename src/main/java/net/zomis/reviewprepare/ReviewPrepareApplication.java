@@ -1,26 +1,33 @@
 package net.zomis.reviewprepare;
 
+import java.util.List;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import net.zomis.reviewprepare.util.FxmlTools;
 
 /**
  * Review Prepare Application Startup point
- * 
+ *
  */
 public class ReviewPrepareApplication extends Application {
-
+    
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Pane root = FXMLLoader.load(getClass().
-                getResource("ReviewPreparer.fxml"));
-        Scene scene = new Scene(root, 400, 400);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        
+        final Parameters params = getParameters();
+        final List<String> parameters = params.getRaw();
+        
+        if (parameters.isEmpty()) {
+            //show the stage
+            FxmlTools.launchFxml("/fxml/ReviewPrepare.fxml", "Review Prepare",
+                    primaryStage, null);
+        } else {
+            //use parameters 
+            ReviewPreparer.start(parameters.toArray(
+                    new String[parameters.size()]));
+        }
     }
-
+    
     public static void main(String[] args) {
         launch(args);
     }
