@@ -106,10 +106,10 @@ public class ReviewPreparer {
 
 	private void outputItems(StringBuilder strBuilder, Collection<String> lines, String header) {
 		if (!lines.isEmpty()) {
-			strBuilder.append(header + "\n");
-			strBuilder.append("\n");
-			for (String str : lines)
-				strBuilder.append("- " + str + ": \n");
+			strBuilder.append(header).append("\n\n");
+			for (String str : lines) {
+				strBuilder.append("- ").append(str).append(": \n");
+            }
 			strBuilder.append("\n");
 		}
 	}
@@ -159,11 +159,11 @@ public class ReviewPreparer {
 						continue;
 					importStatementsFinished = -2;
 					strBuilder.append("    "); // format as code for StackExchange, this needs to be four spaces.
-					strBuilder.append(line + "\n");
+					strBuilder.append(line).append("\n");
 				}
 			}
 			catch (IOException e) {
-				strBuilder.append("> Unable to read " + file + ": "); // use a block-quote for exceptions
+				strBuilder.append("> Unable to read ").append(file).append(": "); // use a block-quote for exceptions
 				strBuilder.append(e);
 				strBuilder.append("\n");
 			}
@@ -180,14 +180,14 @@ public class ReviewPreparer {
 				totalLines += countLines(file);
 			}
 			catch (IOException e) {
-				strBuilder.append("Unable to determine line count for " + file.getAbsolutePath() + "\n");
+				strBuilder.append("Unable to determine line count for ").append(file.getAbsolutePath()).append("\n");
 			}
 		}
 		strBuilder.append(String.format("###Class Summary (%d lines in %d files, making a total of %d bytes)", totalLines, files.size(), totalLength));
 		strBuilder.append("\n");
 		strBuilder.append("\n");
 		for (File file : files) {
-			strBuilder.append("- " + file.getName() + ": \n");
+			strBuilder.append("- ").append(file.getName()).append(": \n");
 		}
 		strBuilder.append("\n");
 	}
