@@ -258,4 +258,12 @@ public class ReviewPreparer {
 		}
 		System.out.println(new ReviewPreparer(files).createFormattedQuestion());
 	}
+
+	public static void main(String[] args) {
+		if (args.length == 0) {
+			ReviewPrepareFrame.start();
+		} else {
+			start(args);
+		}
+	}
 }
