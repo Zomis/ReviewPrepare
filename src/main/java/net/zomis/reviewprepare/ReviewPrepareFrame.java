@@ -21,19 +21,14 @@ public class ReviewPrepareFrame extends JFrame {
 	private static final long serialVersionUID = 2050188992596669693L;
 	private final JTextArea result = new JTextArea();
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		if (args.length == 0) {
-			EventQueue.invokeLater(() -> {
-				try {
-					new ReviewPrepareFrame().setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
-		} else ReviewPreparer.start(args);
+	public static void start() {
+		EventQueue.invokeLater(() -> {
+			try {
+				new ReviewPrepareFrame().setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	/**

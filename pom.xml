@@ -33,7 +33,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>net.zomis.reviewprepare.ReviewPrepareFrame</mainClass>
+                            <mainClass>net.zomis.reviewprepare.ReviewPreparer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
